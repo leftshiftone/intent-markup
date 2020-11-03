@@ -1,0 +1,3 @@
+include "intent-markup-java"
+include "intent-markup-python"
+include "intent-markup-javascript"
