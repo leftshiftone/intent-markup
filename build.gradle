@@ -99,6 +99,9 @@ allprojects {
                 bomProperty("kotlin.version", kotlinVersion)
             }
         }
+        dependencies {
+            dependency "org.apache.velocity:velocity-engine-core:2.1"
+        }
     }
     configurations.all {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
