@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016-2020, Leftshift One
+ * __________________
+ * [2019] Leftshift One
+ * All Rights Reserved.
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Leftshift One and its suppliers,
+ * if any.  The intellectual and technical concepts contained
+ * herein are proprietary to Leftshift One
+ * and its suppliers and may be covered by Patents,
+ * patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden unless prior written permission is obtained
+ * from Leftshift One.
+ */
+
 apply plugin: "kotlin"
 apply plugin: "org.jetbrains.dokka"
 apply plugin: "com.jfrog.bintray"
@@ -6,10 +22,9 @@ apply plugin: "one.leftshift.asteria-publish"
 apply plugin: "one.leftshift.asteria-version"
 
 dependencies {
-    compile "org.antlr:antlr4-runtime:4.7.2"
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation "org.slf4j:slf4j-api:1.7.28"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
     testCompile "org.junit.jupiter:junit-jupiter-engine"
     testCompile "org.assertj:assertj-core"
@@ -43,9 +58,9 @@ publishing {
             artifact javadocJar
             pom.withXml {
                 Node root = asNode()
-                root.appendNode("name", "Dynabuffers")
-                root.appendNode("description", "Dynamic cross platform serialization library")
-                root.appendNode("url", "https://github.com/leftshiftone/dynabuffers")
+                root.appendNode("name", "Intent-Markup")
+                root.appendNode("description", "Library which purpose is to specify which intents of a digital assistant may be suitable for the autocomplete feature of A.I.O.S")
+                root.appendNode("url", "https://github.com/leftshiftone/intent-markup")
 
                 Node licenses = root.appendNode("licenses")
                 Node license = licenses.appendNode("license")
@@ -61,9 +76,9 @@ publishing {
                 developer.appendNode("organizationUrl", "https://www.leftshift.one")
 
                 Node scm = root.appendNode("scm")
-                scm.appendNode("connection", "scm:git:git://github.com/leftshiftone/dynabuffers.git")
-                scm.appendNode("developerConnection", "scm:git:ssh://github.com:leftshiftone/dynabuffers.git")
-                scm.appendNode("url", "https://github.com/leftshiftone/dynabuffers")
+                scm.appendNode("connection", "scm:git:git://github.com/leftshiftone/intent-markup.git")
+                scm.appendNode("developerConnection", "scm:git:ssh://github.com:leftshiftone/intent-markup.git")
+                scm.appendNode("url", "https://github.com/leftshiftone/intent-markup")
             }
         }
     }
@@ -74,12 +89,14 @@ bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_KEY')
     publish = true
+    override = true
     pkg {
-        repo = "dynabuffers"
+        repo = "intent-markup"
         name = "${project.group}.${rootProject.name}"
         userOrg = "leftshiftone"
         licenses = ["Apache-2.0"]
-        vcsUrl = "https://github.com/leftshiftone/dynabuffers.git"
+        vcsUrl = "https://github.com/leftshiftone/intent-markup.git"
         publications = ["mavenJava"]
     }
 }
+

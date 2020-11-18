@@ -2,7 +2,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 /*
- * Copyright (c) 2016-2019, Leftshift One
+ * Copyright (c) 2016-2020, Leftshift One
  * __________________
  * [2019] Leftshift One
  * All Rights Reserved.
@@ -17,15 +17,23 @@ import java.util.regex.Pattern
  * from Leftshift One.
  */
 
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
+import groovy.util.Node
+import org.gradle.api.credentials.AwsCredentials
+
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 buildscript {
     ext {
-        kotlinVersion = "1.3.41"
+        kotlinVersion = "1.4.10"
     }
     repositories {
         jcenter()
     }
     dependencies {
-        // classpath "one.leftshift.asteria:asteria-code-analytics:latest.release"
+         classpath "one.leftshift.asteria:asteria-code-analytics:latest.release"
         classpath "one.leftshift.asteria:asteria-dependency:latest.release"
         classpath "one.leftshift.asteria:asteria-docs:latest.release"
         classpath "one.leftshift.asteria:asteria-email:latest.release"
@@ -38,7 +46,6 @@ buildscript {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
     }
 }
-
 apply plugin: "one.leftshift.asteria-email"
 apply plugin: "one.leftshift.asteria-report"
 apply plugin: "one.leftshift.asteria-dependency"
@@ -68,6 +75,20 @@ allprojects {
 
     repositories {
         jcenter()
+        maven {
+            credentials(AwsCredentials) {
+                accessKey gradle.awsAccessKey
+                secretKey gradle.awsSecretKey
+            }
+            url gradle.releasesRepositoryUrl
+        }
+        maven {
+            credentials(AwsCredentials) {
+                accessKey gradle.awsAccessKey
+                secretKey gradle.awsSecretKey
+            }
+            url gradle.snapshotsRepositoryUrl
+        }
     }
 
     asteriaDependency {
@@ -89,22 +110,20 @@ allprojects {
     }
 }
 
-// subprojects {
-//     apply plugin: "one.leftshift.asteria-code-analytics"
-//
-//     asteriaCodeAnalytics {
-//         sonarUrl = System.getenv("SONAR_HOST_URL")
-//         sonarLoginToken = System.getenv("SONAR_LOGIN")
-//         xmlCoverageReportEnabled = true
-//         sonarProperties = [
-//                 "sonar.test.inclusions"           : "**/*Test.*,**/*.test.ts,**/tests/test_*.py",
-//                 //"sonar.javascript.lcov.reportPaths": "${project(":intent-markup-javascript").projectDir}/coverage/lcov.info",
-//                 //"sonar.typescript.lcov.reportPaths": "${project(":intent-markup-javascript").projectDir}/coverage/lcov.info",
-//                 "sonar.python.coverage.reportPath": "${project(":intent-markup-python").projectDir}/build/coverage/coverage.xml",
-//         ]
-//         coverageExcludes = ["**/*Kt.class"]
-//     }
-// }
+subprojects {
+    apply plugin: "one.leftshift.asteria-code-analytics"
+
+    asteriaCodeAnalytics {
+        sonarUrl = System.getenv("SONAR_HOST_URL")
+        sonarLoginToken = System.getenv("SONAR_LOGIN")
+        xmlCoverageReportEnabled = true
+        sonarProperties = [
+                "sonar.test.inclusions"           : "**/*Test.*,**/*.test.ts,**/tests/test_*.py",
+                "sonar.python.coverage.reportPath": "${project(":intent-markup-python").projectDir}/build/coverage/coverage.xml",
+        ]
+        coverageExcludes = ["**/*Kt.class"]
+    }
+}
 
 task setVersionPython() {
     doLast {
