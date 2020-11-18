@@ -39,10 +39,20 @@ task javadocJar(type: Jar) {
     from dokkaJavadoc
     classifier "javadoc"
 }
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
-test {
-    useJUnitPlatform()
-}
+    test {
+        useJUnitPlatform()
+    }
+
+    tasks.withType(Test) { testTask ->
+        maxHeapSize = "1G"
+        testTask.beforeTest { descriptor ->
+            logger.lifecycle(descriptor.toString())
+        }
+    }
+
 
 archivesBaseName = rootProject.name
 artifacts {
@@ -99,4 +109,12 @@ bintray {
         publications = ["mavenJava"]
     }
 }
+
+    if (System.getenv("CI")) {
+        publish.finalizedBy bintrayUpload
+    }
+    if (System.getenv("CI") == null || System.getenv("CI") != "true") {
+        rootProject.tasks.release.dependsOn tasks.generateLock
+        rootProject.tasks.release.dependsOn tasks.saveLock
+    }
 

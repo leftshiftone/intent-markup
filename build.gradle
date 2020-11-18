@@ -33,7 +33,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-         classpath "one.leftshift.asteria:asteria-code-analytics:latest.release"
+        classpath "one.leftshift.asteria:asteria-code-analytics:latest.release"
         classpath "one.leftshift.asteria:asteria-dependency:latest.release"
         classpath "one.leftshift.asteria:asteria-docs:latest.release"
         classpath "one.leftshift.asteria:asteria-email:latest.release"
@@ -46,10 +46,13 @@ buildscript {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
     }
 }
+
+apply plugin: "antlr"
+apply plugin: "kotlin"
 apply plugin: "one.leftshift.asteria-email"
 apply plugin: "one.leftshift.asteria-report"
-apply plugin: "one.leftshift.asteria-dependency"
-apply plugin: "one.leftshift.asteria-version"
+apply plugin: "one.leftshift.asteria-publish"
+apply plugin: "com.jfrog.bintray"
 
 asteriaEmail {
     smtpHost = System.getenv("ASTERIA_EMAIL_SMTP_HOST")
@@ -62,11 +65,21 @@ asteriaReport {
     reportingUrl = System.getenv("ASTERIA_REPORT_URL")
     depsJsonResult = file("${rootProject.buildDir}/dependencyUpdates/report.json")
     junitXmlResults = fileTree(rootProject.projectDir) {
-        include("**/test-results/*/TEST-*.xml")
+        include(
+                "**/test-results/*/TEST-*.xml",
+                "**/intent-markup-javascript/build/test/TEST-*.xml",
+                "**/intent-markup-python/build/test/TEST-*.xml"
+        )
     }
-    junitBinaryResults = files(["test"].collect {
-        "${project.buildDir}/test-results/${it}/binary"
-    })
+    junitBinaryResults = files(subprojects.collect { subproject ->
+        ["test"].collect {
+            "${subproject.buildDir}/test-results/${it}/binary"
+        }
+    }.flatten())
+}
+
+asteriaPublish {
+    enableBranchSnapshotRepositories = true
 }
 
 allprojects {
@@ -75,20 +88,6 @@ allprojects {
 
     repositories {
         jcenter()
-        maven {
-            credentials(AwsCredentials) {
-                accessKey gradle.awsAccessKey
-                secretKey gradle.awsSecretKey
-            }
-            url gradle.releasesRepositoryUrl
-        }
-        maven {
-            credentials(AwsCredentials) {
-                accessKey gradle.awsAccessKey
-                secretKey gradle.awsSecretKey
-            }
-            url gradle.snapshotsRepositoryUrl
-        }
     }
 
     asteriaDependency {
@@ -101,6 +100,14 @@ allprojects {
             }
         }
     }
+    configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == "org.jetbrains.kotlin") {
+                details.useVersion kotlinVersion
+            }
+        }
+    }
 
     if (System.getenv("CI")) {
         afterEvaluate { rootProject.tasks.postRelease.finalizedBy rootProject.tasks.sendReleaseEmail }
@@ -110,6 +117,56 @@ allprojects {
     }
 }
 
+repositories {
+    jcenter()
+    maven {
+        credentials(AwsCredentials) {
+            accessKey gradle.awsAccessKey
+            secretKey gradle.awsSecretKey
+        }
+        url gradle.releasesRepositoryUrl
+    }
+    maven {
+        credentials(AwsCredentials) {
+            accessKey gradle.awsAccessKey
+            secretKey gradle.awsSecretKey
+        }
+        url gradle.snapshotsRepositoryUrl
+    }
+}
+
+
+dependencies {
+    antlr "org.antlr:antlr4:4.7.2" // use ANTLR version 4
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation "org.apache.velocity:velocity-engine-core"
+
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.assertj:assertj-core"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+sourceSets.main.java.srcDirs += new File(buildDir, "generated-src/antlr")
+generateGrammarSource {
+    outputDirectory = new File(project.rootDir, "build/generated-src/antlr/gaia/sdk/antlr")
+    arguments += ["-visitor", "-package", "gaia.sdk.antlr"]
+}
+compileKotlin.dependsOn generateGrammarSource
+
+task generateSource(type: Test) {
+    useJUnitPlatform()
+    filter {
+        includeTestsMatching "gaia.sdk.codegen.KotlinCodegenTest"
+    }
+}
+generateSource.dependsOn generateGrammarSource
+
+
 subprojects {
     apply plugin: "one.leftshift.asteria-code-analytics"
 
@@ -118,13 +175,25 @@ subprojects {
         sonarLoginToken = System.getenv("SONAR_LOGIN")
         xmlCoverageReportEnabled = true
         sonarProperties = [
-                "sonar.test.inclusions"           : "**/*Test.*,**/*.test.ts,**/tests/test_*.py",
-                "sonar.python.coverage.reportPath": "${project(":intent-markup-python").projectDir}/build/coverage/coverage.xml",
+                "sonar.test.inclusions"            : "**/*Test.*,**/*.test.ts,**/tests/test_*.py",
+                "sonar.javascript.lcov.reportPaths": "${project(":intent-markup-javascript").projectDir}/coverage/lcov.info",
+                "sonar.typescript.lcov.reportPaths": "${project(":intent-markup-javascript").projectDir}/coverage/lcov.info",
+                "sonar.python.coverage.reportPath" : "${project(":intent-markup-python").projectDir}/build/coverage/coverage.xml",
         ]
         coverageExcludes = ["**/*Kt.class"]
     }
 }
 
+task setVersionJavascript() {
+    doLast {
+        String packageJsonPath = project(":gaia-sdk-javascript").projectDir.toString() + "/package.json"
+        File packageJsonFile = file(packageJsonPath)
+        def parsedJson = new JsonSlurper().parseText(packageJsonFile.text)
+        parsedJson.version = version.toString()
+        packageJsonFile.text = new JsonBuilder(parsedJson).toPrettyString()
+        logger.quiet("Updated version in ${packageJsonPath} to ${version.toString()}")
+    }
+}
 task setVersionPython() {
     doLast {
         String pyprojectTomlPath = project(":intent-markup-python").projectDir.toString() + "/pyproject.toml"
@@ -147,6 +216,9 @@ task setVersionPython() {
 }
 task commitVersions() {
     doLast {
+        // javascript
+        String packageJsonPath = "${project(":intent-markup-javascript").projectDir}/package.json"
+        executeAssertExitCode(["git", "add", packageJsonPath])
         // python
         String pyprojectTomlPath = "${project(":intent-markup-python").projectDir}/pyproject.toml"
         executeAssertExitCode(["git", "add", pyprojectTomlPath])
@@ -155,7 +227,7 @@ task commitVersions() {
         executeWarnExitCode(["git", "commit", "-m", "'$commitMessage'".toString()])
     }
 }
-commitVersions.dependsOn setVersionPython
+commitVersions.dependsOn setVersionJavascript, setVersionPython
 
 task pushVersions() {
     doLast {
@@ -186,4 +258,63 @@ private int execute(List<String> command) {
     process.waitFor()
     logger.debug("Executed command '${command.join(" ")}'")
     return process.exitValue()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId rootProject.name
+            from components.java
+            pom.withXml {
+                Node root = asNode()
+                root.appendNode("name", "Intent-Markup")
+                root.appendNode("description", "Intent-Markup is an open source library which purpose is to specify which intents of a digital assistant may be suitable for the autocomplete feature of A.I.O.S")
+                root.appendNode("url", "https://github.com/leftshiftone/intent-markup")
+
+                Node licenses = root.appendNode("licenses")
+                Node license = licenses.appendNode("license")
+                license.appendNode("name", "The Apache License, Version 2.0")
+                license.appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.txt")
+
+                Node developers = root.appendNode("developers")
+                Node developer = developers.appendNode("developer")
+                developer.appendNode("id", "leftshiftone")
+                developer.appendNode("name", "Leftshift One")
+                developer.appendNode("email", "contact@leftshift.one")
+                developer.appendNode("organization", "Leftshift One Software GmbH")
+                developer.appendNode("organizationUrl", "https://www.leftshift.one")
+
+                Node scm = root.appendNode("scm")
+                scm.appendNode("connection", "scm:git:git://github.com/leftshiftone/intent-markup.git")
+                scm.appendNode("developerConnection", "scm:git:ssh://github.com:leftshiftone/intent-markup.git")
+                scm.appendNode("url", "https://github.com/leftshiftone/intent-markup")
+            }
+        }
+    }
+}
+
+bintray {
+    logger.info "Bintray deploy with user [${System.getenv('BINTRAY_USER')}] while working on ${project.name}"
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    publish = true
+    override = true
+    pkg {
+        repo = "intent-markup"
+        name = "${project.group}.${project.name}"
+        userOrg = "leftshiftone"
+        licenses = ["Apache-2.0"]
+        vcsUrl = "https://github.com/leftshiftone/intent-markup.git"
+        publications = ["mavenJava"]
+    }
+}
+
+if (System.getenv("CI")) {
+    publish.finalizedBy bintrayUpload
+}
+
+if (System.getenv("CI") == null || System.getenv("CI") != "true") {
+    tasks.release.dependsOn tasks.generateLock
+    tasks.release.dependsOn tasks.saveLock
+    tasks.release.dependsOn tasks.persistDependencyLock
 }
