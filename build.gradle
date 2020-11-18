@@ -151,20 +151,6 @@ test {
     useJUnitPlatform()
 }
 
-sourceSets.main.java.srcDirs += new File(buildDir, "generated-src/antlr")
-generateGrammarSource {
-    outputDirectory = new File(project.rootDir, "build/generated-src/antlr/gaia/sdk/antlr")
-    arguments += ["-visitor", "-package", "gaia.sdk.antlr"]
-}
-compileKotlin.dependsOn generateGrammarSource
-
-task generateSource(type: Test) {
-    useJUnitPlatform()
-    filter {
-        includeTestsMatching "gaia.sdk.codegen.KotlinCodegenTest"
-    }
-}
-generateSource.dependsOn generateGrammarSource
 
 
 subprojects {
@@ -186,7 +172,7 @@ subprojects {
 
 task setVersionJavascript() {
     doLast {
-        String packageJsonPath = project(":gaia-sdk-javascript").projectDir.toString() + "/package.json"
+        String packageJsonPath = project(":intent-markup-javascript").projectDir.toString() + "/package.json"
         File packageJsonFile = file(packageJsonPath)
         def parsedJson = new JsonSlurper().parseText(packageJsonFile.text)
         parsedJson.version = version.toString()
