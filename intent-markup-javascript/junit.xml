@@ -1,0 +1,10 @@
+<testsuites name="jest tests" tests="3" failures="0" time="63.212">
+  <testsuite name="IntentMarkupParser Test" errors="0" failures="0" skipped="0" timestamp="2020-11-19T05:48:16" time="30.816" tests="3">
+    <testcase classname="IntentMarkupParser Test test parse xml 1" name="IntentMarkupParser Test test parse xml 1" time="0.007">
+    </testcase>
+    <testcase classname="IntentMarkupParser Test test parse xml 2" name="IntentMarkupParser Test test parse xml 2" time="0.004">
+    </testcase>
+    <testcase classname="IntentMarkupParser Test test parse xml 3" name="IntentMarkupParser Test test parse xml 3" time="0.002">
+    </testcase>
+  </testsuite>
+</testsuites>
