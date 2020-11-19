@@ -25,6 +25,7 @@ dependencies {
     implementation "org.slf4j:slf4j-api:1.7.28"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+    implementation "org.apache.commons:commons-lang3:3.0"
 
     testCompile "org.junit.jupiter:junit-jupiter-engine"
     testCompile "org.assertj:assertj-core"
@@ -39,20 +40,19 @@ task javadocJar(type: Jar) {
     from dokkaJavadoc
     classifier "javadoc"
 }
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
-    test {
-        useJUnitPlatform()
-    }
+test {
+    useJUnitPlatform()
+}
 
-    tasks.withType(Test) { testTask ->
-        maxHeapSize = "1G"
-        testTask.beforeTest { descriptor ->
-            logger.lifecycle(descriptor.toString())
-        }
-    }
-
+tasks.withType(Test) { testTask ->
+   maxHeapSize = "1G"
+   testTask.beforeTest { descriptor ->
+      logger.lifecycle(descriptor.toString())
+   }
+}
 
 archivesBaseName = rootProject.name
 artifacts {

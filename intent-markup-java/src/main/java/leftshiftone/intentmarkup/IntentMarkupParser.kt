@@ -1,51 +1,53 @@
 package leftshiftone.intentmarkup
 
+import leftshiftone.intentmarkup.validation.IntentMarkupValidator
+import leftshiftone.intentmarkup.validation.XmlValidation
 import org.w3c.dom.Node
 import java.io.ByteArrayInputStream
-import java.io.FileInputStream
 import java.io.InputStream
-import javax.xml.XMLConstants
+import java.nio.charset.StandardCharsets
 import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.transform.stream.StreamSource
-import javax.xml.validation.SchemaFactory
 
 class IntentMarkupParser {
 
     companion object {
-
-        private val parser = ThreadLocal.withInitial {
+        // DocumentBuilderFactory and DocumentBuilder are not thread safe but resource intensive instances
+        private val DOCUMENT_BUILDER = ThreadLocal.withInitial {
             val builder = DocumentBuilderFactory.newInstance()
             builder.newDocumentBuilder()
         }!!
 
-        private val validator = ThreadLocal.withInitial {
-            val root = System.getProperty("user.dir")
-            val xsdStream = FileInputStream(root + "/../src/main/resources/intent-markup.xsd")
+        @JvmStatic
+        fun getDocumentBuilder() = DOCUMENT_BUILDER.get()!!
 
-            val factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-            val schema = factory.newSchema(StreamSource(xsdStream))
-            schema.newValidator()
-        }!!
+        @JvmStatic
+        private val validator = IntentMarkupValidator()
 
-        fun parse(stream: InputStream): IntentMarkup {
-            val documentBuilder = parser.get()
-            val validator = validator.get()
+    }
 
-            try {
-                val bytes = stream.readBytes()
-                validator.validate(StreamSource(ByteArrayInputStream(bytes)))
-                val document = documentBuilder.parse(ByteArrayInputStream(bytes))
-
-                val root = document.find("intent")
-                val musts = root.findAll("must").map {
-                    MustWord(it.textContent, it.isTrue("fuzzy"))
-                }
-                return IntentMarkup(root.isTrue("autocomplete", true), root.textContent, musts)
-            } catch (e: Exception) {
-                throw RuntimeException(e)
-            }
+    private fun parse(text: String, validate: Boolean): IntentMarkup {
+        val documentBuilder = getDocumentBuilder()
+        if(validate){
+            val validator = validator
+            val validation = validator.validate(text)
+            if (validation is XmlValidation.Failure) throw RuntimeException(validation.getMessage())
         }
 
+        try {
+            val document = documentBuilder.parse(ByteArrayInputStream(text.toByteArray(Charsets.UTF_8)))
+
+            val root = document.find("intent")
+            val musts = root.findAll("must").map {
+                MustWord(it.textContent, it.isTrue("fuzzy"))
+            }
+            return IntentMarkup(root.isTrue("autocomplete", true), root.textContent, musts)
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+        }
+    }
+
+    fun parse(stream: InputStream, validate: Boolean =true): IntentMarkup {
+        return parse(stream.reader(StandardCharsets.UTF_8).readText(), validate)
     }
 
 }
