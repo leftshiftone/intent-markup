@@ -1,5 +1,9 @@
 {
     "compileClasspath": {
+        "org.apache.commons:commons-lang3": {
+            "locked": "3.0",
+            "requested": "3.0"
+        },
         "org.jetbrains.kotlin:kotlin-reflect": {
             "locked": "1.4.10",
             "requested": "1.4.10"
@@ -40,6 +44,10 @@
         }
     },
     "default": {
+        "org.apache.commons:commons-lang3": {
+            "locked": "3.0",
+            "requested": "3.0"
+        },
         "org.jetbrains.kotlin:kotlin-reflect": {
             "locked": "1.4.10",
             "requested": "1.4.10"
@@ -80,6 +88,10 @@
         }
     },
     "implementationDependenciesMetadata": {
+        "org.apache.commons:commons-lang3": {
+            "locked": "3.0",
+            "requested": "3.0"
+        },
         "org.jetbrains.kotlin:kotlin-reflect": {
             "locked": "1.4.10",
             "requested": "1.4.10"
@@ -342,6 +354,10 @@
         }
     },
     "runtimeClasspath": {
+        "org.apache.commons:commons-lang3": {
+            "locked": "3.0",
+            "requested": "3.0"
+        },
         "org.jetbrains.kotlin:kotlin-reflect": {
             "locked": "1.4.10",
             "requested": "1.4.10"
@@ -468,6 +484,10 @@
         }
     },
     "testCompileClasspath": {
+        "org.apache.commons:commons-lang3": {
+            "locked": "3.0",
+            "requested": "3.0"
+        },
         "org.apiguardian:apiguardian-api": {
             "locked": "1.1.0",
             "transitive": [
@@ -549,6 +569,10 @@
         }
     },
     "testImplementationDependenciesMetadata": {
+        "org.apache.commons:commons-lang3": {
+            "locked": "3.0",
+            "requested": "3.0"
+        },
         "org.apiguardian:apiguardian-api": {
             "locked": "1.1.0",
             "transitive": [
@@ -673,6 +697,10 @@
         }
     },
     "testRuntimeClasspath": {
+        "org.apache.commons:commons-lang3": {
+            "locked": "3.0",
+            "requested": "3.0"
+        },
         "org.apiguardian:apiguardian-api": {
             "locked": "1.1.0",
             "transitive": [
