@@ -9,16 +9,16 @@ import java.util.concurrent.TimeUnit
 class IntentMarkupParserTest {
 
     @Test
-    fun testParse01() {
-        val result = IntentMarkupParser().parse(IntentMarkupParserTest::class.java.getResourceAsStream("/test01.xml"))
+    fun intent_markup_with_autocomplete_false() {
+        val result = IntentMarkupParser().parse(IntentMarkupParserTest::class.java.getResourceAsStream("/intent_markup_with_autocomplete_false.xml"))
         Assertions.assertFalse(result.autocomplete)
         Assertions.assertEquals("Das ist ein Beispiel.", result.text)
         Assertions.assertTrue(result.musts.isEmpty())
     }
 
     @Test
-    fun testParse02() {
-        val result = IntentMarkupParser().parse(IntentMarkupParserTest::class.java.getResourceAsStream("/test02.xml"))
+    fun intent_markup_with_autocomplete_implicit_and_fuzzy() {
+        val result = IntentMarkupParser().parse(IntentMarkupParserTest::class.java.getResourceAsStream("/intent_markup_with_autocomplete_implicit_and_fuzzy.xml"))
         Assertions.assertTrue(result.autocomplete)
         Assertions.assertEquals("Das ist ein Beispiel.", result.text)
         Assertions.assertFalse(result.musts.isEmpty())
@@ -27,14 +27,14 @@ class IntentMarkupParserTest {
     }
 
     @Test
-    fun testParse03() {
-        parseAndAssertTest03(IntentMarkupParser())
+    fun intent_markup_with_autocomplete_explicit_and_fuzzy() {
+        intent_markup_with_autocomplete_explicit_and_fuzzy(IntentMarkupParser())
     }
 
 
     @Test
-    fun testParse04() {
-        val result = IntentMarkupParser().parse(IntentMarkupParserTest::class.java.getResourceAsStream("/test04.xml"))
+    fun intent_with_no_markup() {
+        val result = IntentMarkupParser().parse(IntentMarkupParserTest::class.java.getResourceAsStream("/intent_with_no_markup.xml"))
         Assertions.assertTrue(result.autocomplete)
         Assertions.assertEquals("Das ist ein Beispiel.", result.text)
     }
@@ -49,7 +49,7 @@ class IntentMarkupParserTest {
                 try{
                     barrier.await(10, TimeUnit.SECONDS)
                     println("Thread-${it} starting execution")
-                    parseAndAssertTest03(parser)
+                    (parser)
                 } finally {
                     endBarrier.countDown()
                 }
@@ -59,9 +59,9 @@ class IntentMarkupParserTest {
         endBarrier.await(60, TimeUnit.SECONDS)
     }
 
-    private fun parseAndAssertTest03(parser: IntentMarkupParser, expectSuccess: Boolean = true) {
+    private fun intent_markup_with_autocomplete_explicit_and_fuzzy(parser: IntentMarkupParser, expectSuccess: Boolean = true) {
         try {
-            val result = parser.parse(this.javaClass.getResourceAsStream("/test03.xml"))
+            val result = parser.parse(this.javaClass.getResourceAsStream("/intent_markup_with_autocomplete_explicit_and_fuzzy.xml"))
             Assertions.assertTrue(result.autocomplete)
             Assertions.assertEquals("Das ist ein Beispiel.", result.text)
             Assertions.assertFalse(result.musts.isEmpty())

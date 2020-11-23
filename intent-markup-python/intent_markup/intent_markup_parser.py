@@ -31,6 +31,6 @@ class IntentMarkupParser:
                 value = element_to_string(intent)
                 must_words = list(map(parse_must_words,intent.findall("must")))
                 return IntentMarkup(autocomplete, value, must_words)
-        except xml.ParseError as e:
-            print("Errror")
+        except xml.ParseError:
+            raise ValueError("A parse error was thrown when parsing " + raw_xml)
 
