@@ -2,7 +2,7 @@
     "name": "@leftshiftone/intent-markup",
     "description": "JavaScript library to specify which Intents of a digital assistant may be suitable for the autocomplete feature of A.I.O.S.",
     "main": "dist/all.js",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "jest-junit": {
         "suiteName": "Frontend Tests",
         "suiteNameTemplate": "{filename}",
