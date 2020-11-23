@@ -33,6 +33,13 @@ class IntentMarkupParserTest {
 
 
     @Test
+    fun testParse04() {
+        val result = IntentMarkupParser().parse(IntentMarkupParserTest::class.java.getResourceAsStream("/test04.xml"))
+        Assertions.assertTrue(result.autocomplete)
+        Assertions.assertEquals("Das ist ein Beispiel.", result.text)
+    }
+
+    @Test
     fun parallelTest() {
         val barrier = CountDownLatch(1)
         val endBarrier = CountDownLatch(25)

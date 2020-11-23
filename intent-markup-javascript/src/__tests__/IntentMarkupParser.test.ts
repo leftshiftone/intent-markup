@@ -23,4 +23,9 @@ describe("IntentMarkupParser Test", () => {
         expect(intent.musts[0].text).toBe("Beispiel")
         expect(intent.musts[0].fuzzy).toBeTruthy()
     });
+    test('test parse xml 4', () => {
+        const intent = IntentMarkupParser.parse('Das ist ein Beispiel.')
+        expect(intent.autocomplete).toBeTruthy()
+        expect(intent.text).toBe("Das ist ein Beispiel.")
+    });
 })

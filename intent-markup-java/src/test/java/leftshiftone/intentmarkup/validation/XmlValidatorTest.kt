@@ -20,7 +20,7 @@ class XmlValidatorTest {
                 try{
                     barrier.await(10, TimeUnit.SECONDS)
                     println("Thread-${it} starting execution")
-                    val validation = validator.validate("<intent autocomplete=\"false\">Das ist ein Beispiel.</intent>")
+                    val validation = validator.validate("<markup><intent autocomplete=\"false\">Das ist ein Beispiel.</intent></markup>")
                     if(validation is XmlValidation.Failure) errorCounter.incrementAndGet()
                 } catch (ex: Exception){
                     errorCounter.incrementAndGet()
@@ -38,7 +38,7 @@ class XmlValidatorTest {
     @Test
     fun testSuccess() {
         val validator = IntentMarkupValidator()
-        val validation = validator.validate("<intent autocomplete=\"false\">Das ist ein Beispiel.</intent>")
+        val validation = validator.validate("<markup><intent autocomplete=\"false\">Das ist ein Beispiel.</intent></markup>")
         if(validation is XmlValidation.Failure) fail<String>("Markup should be successfully validated")
     }
 

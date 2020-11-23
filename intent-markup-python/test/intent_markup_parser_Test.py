@@ -31,3 +31,10 @@ class IntentMarkupParserTest(TestCase):
             self.assertFalse(len(intent.musts) == 0)
             self.assertTrue(intent.musts[0].fuzzy)
             self.assertEqual("Beispiel", intent.musts[0].text)
+
+    def test_intent_markup_parser_04(self):
+        with open(f"{self.root_dir}/test04.xml", 'r') as f:
+            intent = IntentMarkupParser.parse(f.read())
+            print(intent)
+            self.assertTrue(intent.autocomplete)
+            self.assertEqual("Das ist ein Beispiel.", intent.text)

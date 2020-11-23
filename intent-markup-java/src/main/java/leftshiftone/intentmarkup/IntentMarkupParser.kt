@@ -25,8 +25,9 @@ class IntentMarkupParser {
 
     }
 
-    private fun parse(text: String, validate: Boolean): IntentMarkup {
+    private fun parse(xml: String, validate: Boolean): IntentMarkup {
         val documentBuilder = getDocumentBuilder()
+        val text = "<markup>$xml</markup>"
         if(validate){
             val validator = validator
             val validation = validator.validate(text)
@@ -35,12 +36,17 @@ class IntentMarkupParser {
 
         try {
             val document = documentBuilder.parse(ByteArrayInputStream(text.toByteArray(Charsets.UTF_8)))
+            val root = document.find("markup")
+            val intentNode= root.findAll("intent")
+                    .firstOrNull()
+            if(intentNode==null){
+                return IntentMarkup(true, root.textContent, emptyList())
+            }
 
-            val root = document.find("intent")
-            val musts = root.findAll("must").map {
+            val musts = intentNode.findAll("must").map {
                 MustWord(it.textContent, it.isTrue("fuzzy"))
             }
-            return IntentMarkup(root.isTrue("autocomplete", true), root.textContent, musts)
+            return IntentMarkup(intentNode.isTrue("autocomplete", true), intentNode.textContent, musts)
         } catch (e: Exception) {
             throw RuntimeException(e)
         }
@@ -65,7 +71,7 @@ fun Node.find(tag: String): Node {
 fun Node.findAll(vararg tags: String): List<Node> {
     val result = ArrayList<Node>()
     val nodeList = this.childNodes
-    for (i in 0 until nodeList.length - 1) {
+    for (i in 0..nodeList.length - 1) {
         val nodeName = nodeList.item(i).nodeName
         if (nodeName in tags) {
             result.add(nodeList.item(i))
