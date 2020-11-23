@@ -21,10 +21,16 @@ class IntentMarkupParser:
                 s += element.tail
             return s
 
-        parsed_xml = xml.fromstring(raw_xml)
+        try:
+            parsed_xml = xml.fromstring("<markup>"+raw_xml+"</markup>")
+            if parsed_xml.find(".//intent") is None:
+                return IntentMarkup(True, raw_xml, [])
+            else:
+                intent = parsed_xml.find(".//intent")
+                autocomplete = intent.attrib["autocomplete"] == "true" if "autocomplete" in intent.attrib else True
+                value = element_to_string(intent)
+                must_words = list(map(parse_must_words,intent.findall("must")))
+                return IntentMarkup(autocomplete, value, must_words)
+        except xml.ParseError:
+            raise ValueError("A parse error was thrown when parsing " + raw_xml)
 
-        autocomplete = parsed_xml.attrib["autocomplete"] == "true" if "autocomplete" in parsed_xml.attrib else True
-        value = element_to_string(parsed_xml)
-        must_words = list(map(parse_must_words, parsed_xml.findall("must")))
-
-        return IntentMarkup(autocomplete, value, must_words)
