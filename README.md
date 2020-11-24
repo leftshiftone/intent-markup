@@ -7,6 +7,15 @@
 
 This library is used to specify which Intents of a digital assistant may be suitable for the autocomplete feature of A.I.O.S.
 
+This library can be used with Java, Python and Javascript. Intent Utterances can be excluded for the autocomplete feature as follows.
+```
+<!-- disable autocomplete, default is true -->
+<intent autocomplete="false">Das ist ein Beispiel.</intent>
+
+<!-- wird automatisch in <intent>Das ist ein Beispiel.</intent> konvertiert -->
+Das ist ein Beispiel.
+```
+
 ## Development
 
 ### Release
