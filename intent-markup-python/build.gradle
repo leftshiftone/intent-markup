@@ -16,7 +16,17 @@ task test() {
     }
 }
 
+task copyTests{
+    doLast{
+        copy{
+            from ("../tests")
+            into ("$buildDir/testResources")
+        }
+    }
+}
+
 task assemble() {
+    dependsOn copyTests
     doLast {
         execute(["poetry", "build"])
     }
@@ -25,6 +35,7 @@ task assemble() {
 task build() {
     dependsOn test, assemble
 }
+
 
 task publish() {
     doLast {

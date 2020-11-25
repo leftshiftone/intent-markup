@@ -10,7 +10,18 @@ task installDependencies() {
     }
 }
 
+task copyTests{
+    doLast{
+        copy{
+            from ("../tests")
+            into ("$buildDir/testResources")
+        }
+    }
+}
+
 task test() {
+
+    dependsOn copyTests
     doLast {
         execute(["yarn", "test", "--coverage"])
     }

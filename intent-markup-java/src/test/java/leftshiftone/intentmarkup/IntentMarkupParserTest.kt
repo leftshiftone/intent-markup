@@ -1,6 +1,5 @@
 package leftshiftone.intentmarkup
 
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.concurrent.CountDownLatch

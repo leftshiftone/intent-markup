@@ -54,6 +54,17 @@ tasks.withType(Test) { testTask ->
    }
 }
 
+task copyTests{
+    doLast {
+        copy {
+            from("../tests")
+            into("$buildDir/testResources")
+        }
+    }
+}
+
+sourceSets.test.resources.srcDirs += new File(buildDir, "testResources")
+test.dependsOn copyTests
 archivesBaseName = rootProject.name
 artifacts {
     archives sourceJar

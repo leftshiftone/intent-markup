@@ -4,7 +4,7 @@ import IntentMarkupParser from "../IntentMarkupParser";
 
 describe("IntentMarkupParser Test", () => {
     test('intent_markup_with_autocomplete_false', () => {
-        let filePath = path.join(__dirname, 'intent_markup_with_autocomplete_false.xml');
+        let filePath = path.join(__dirname+'/../../build/testResources', 'intent_markup_with_autocomplete_false.xml');
         let xml = fs.readFileSync(filePath).toString()
         const intent = IntentMarkupParser.parse(xml)
         expect(intent.autocomplete).toBeFalsy()
@@ -12,7 +12,7 @@ describe("IntentMarkupParser Test", () => {
         expect(intent.musts.length == 0).toBeTruthy()
     });
     test('intent_markup_with_autocomplete_implicit_and_fuzzy', () => {
-        let filePath = path.join(__dirname, 'intent_markup_with_autocomplete_implicit_and_fuzzy.xml');
+        let filePath = path.join(__dirname+'/../../build/testResources', 'intent_markup_with_autocomplete_implicit_and_fuzzy.xml');
         let xml = fs.readFileSync(filePath).toString()
         const intent = IntentMarkupParser.parse(xml)
         expect(intent.autocomplete).toBeTruthy()
@@ -22,7 +22,7 @@ describe("IntentMarkupParser Test", () => {
         expect(intent.musts[0].fuzzy).toBeTruthy()
     });
     test('intent_markup_with_autocomplete_explicit_and_fuzzy.xml', () => {
-        let filePath = path.join(__dirname, 'intent_markup_with_autocomplete_explicit_and_fuzzy.xml');
+        let filePath = path.join(__dirname+'/../../build/testResources', 'intent_markup_with_autocomplete_explicit_and_fuzzy.xml');
         let xml = fs.readFileSync(filePath).toString()
         const intent = IntentMarkupParser.parse(xml)
         expect(intent.autocomplete).toBeTruthy()
@@ -32,7 +32,7 @@ describe("IntentMarkupParser Test", () => {
         expect(intent.musts[0].fuzzy).toBeTruthy()
     });
     test('intent_with_no_markup', () => {
-        let filePath = path.join(__dirname, 'intent_with_no_markup.xml');
+        let filePath = path.join(__dirname+'/../../build/testResources', 'intent_with_no_markup.xml');
         let xml = fs.readFileSync(filePath).toString()
         const intent = IntentMarkupParser.parse(xml)
         expect(intent.autocomplete).toBeTruthy()
