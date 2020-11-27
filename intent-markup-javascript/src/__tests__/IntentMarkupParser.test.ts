@@ -1,6 +1,6 @@
 const fs= require("fs")
 const path= require("path")
-import IntentMarkupParser from "../IntentMarkupParser";
+import {IntentMarkupParser} from "../IntentMarkupParser";
 
 describe("IntentMarkupParser Test", () => {
     test('intent_markup_with_autocomplete_false', () => {

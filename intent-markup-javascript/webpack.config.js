@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = (env, argv) => ({
     entry: {
-        'intent_markup' : './src/all.ts'
+        'intent_markup' : './src/index.ts'
     },
     module: {
         rules: [

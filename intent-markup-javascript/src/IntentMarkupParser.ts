@@ -1,6 +1,6 @@
 import {IntentMarkup, MustWord} from "./IntentMarkup";
 
-export default class IntentMarkupParser {
+export class IntentMarkupParser {
 
     public static parse(xml: string) {
         const parser = new DOMParser()
