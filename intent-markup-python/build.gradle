@@ -10,12 +10,6 @@ task installDependencies() {
     }
 }
 
-task test() {
-    doLast {
-        execute(["poetry", "run", "test"])
-    }
-}
-
 task copyTests{
     doLast{
         copy{
@@ -25,8 +19,14 @@ task copyTests{
     }
 }
 
-task assemble() {
+task test() {
     dependsOn copyTests
+    doLast {
+        execute(["poetry", "run", "test"])
+    }
+}
+
+task assemble() {
     doLast {
         execute(["poetry", "build"])
     }
