@@ -25,10 +25,10 @@ class IntentMarkupParser {
 
     }
 
-    private fun parse(xml: String, validate: Boolean): IntentMarkup {
+    fun parse(xml: String, validate: Boolean = true): IntentMarkup {
         val documentBuilder = getDocumentBuilder()
         val text = "<markup>$xml</markup>"
-        if(validate){
+        if (validate) {
             val validator = validator
             val validation = validator.validate(text)
             if (validation is XmlValidation.Failure) throw RuntimeException(validation.getMessage())
@@ -37,9 +37,9 @@ class IntentMarkupParser {
         try {
             val document = documentBuilder.parse(ByteArrayInputStream(text.toByteArray(Charsets.UTF_8)))
             val root = document.find("markup")
-            val intentNode= root.findAll("intent")
-                    .firstOrNull()
-            if(intentNode==null){
+            val intentNode = root.findAll("intent")
+                .firstOrNull()
+            if (intentNode == null) {
                 return IntentMarkup(true, root.textContent, emptyList())
             }
 
@@ -52,7 +52,7 @@ class IntentMarkupParser {
         }
     }
 
-    fun parse(stream: InputStream, validate: Boolean =true): IntentMarkup {
+    fun parse(stream: InputStream, validate: Boolean = true): IntentMarkup {
         return parse(stream.reader(StandardCharsets.UTF_8).readText(), validate)
     }
 
