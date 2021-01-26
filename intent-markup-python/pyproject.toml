@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "intent-markup"
-version = "0.3.0"
+version = "0.4.0"
 description = "Intent Markup library for digital assistant of AIOS."
 authors = ["Leftshift One <contact@leftshift.one>"]
 
