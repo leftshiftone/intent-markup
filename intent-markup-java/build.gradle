@@ -47,10 +47,6 @@ task sourcesJar(type: Jar) {
     classifier "sources"
 }
 
-artifacts {
-    archives javadocJar, sourcesJar
-}
-
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -78,8 +74,7 @@ sourceSets.test.resources.srcDirs += new File(buildDir, "testResources")
 test.dependsOn copyTests
 archivesBaseName = rootProject.name
 artifacts {
-    archives sourceJar
-    archives javadocJar
+    archives javadocJar, sourceJar
 }
 publishing {
     publications {
