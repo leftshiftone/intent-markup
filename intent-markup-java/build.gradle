@@ -84,7 +84,7 @@ artifacts {
 publishing {
     publications {
         release(MavenPublication) {
-            artifactId rootProject.name
+            artifactId project.name
             from components.java
             artifact sourceJar
             artifact javadocJar
