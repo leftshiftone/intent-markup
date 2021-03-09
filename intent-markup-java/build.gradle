@@ -125,6 +125,12 @@ publishing {
         }
     }
 }
+ext."signing.keyId" = System.getenv("OSSRH_SIGN_KEY_ID")
+ext."signing.password" = System.getenv("OSSRH_SIGN_KEY_PASSWORD")
+ext."signing.secretKeyRingFile" = System.getenv("OSSRH_SIGN_KEY_PATH")
+signing {
+    sign publishing.publications
+}
 
 if (System.getenv("CI") == null || System.getenv("CI") != "true") {
     rootProject.tasks.release.dependsOn tasks.generateLock
