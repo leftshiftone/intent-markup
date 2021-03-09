@@ -412,8 +412,7 @@
             ]
         },
         "org.jetbrains.kotlin:kotlin-compiler-embeddable": {
-            "locked": "1.4.10",
-            "requested": "1.4.10"
+            "locked": "1.4.10"
         },
         "org.jetbrains.kotlin:kotlin-daemon-embeddable": {
             "locked": "1.4.10",
