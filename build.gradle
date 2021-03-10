@@ -259,49 +259,6 @@ private int execute(List<String> command) {
     return process.exitValue()
 }
 
-publishing {
-    publications {
-        release(MavenPublication) {
-            artifactId rootProject.name
-            from components.java
-            pom.withXml {
-                Node root = asNode()
-                root.appendNode("name", "Intent-Markup")
-                root.appendNode("description", "Intent-Markup is an open source library which purpose is to specify which intents of a digital assistant may be suitable for the autocomplete feature of A.I.O.S")
-                root.appendNode("url", "https://github.com/leftshiftone/intent-markup")
-
-                Node licenses = root.appendNode("licenses")
-                Node license = licenses.appendNode("license")
-                license.appendNode("name", "The Apache License, Version 2.0")
-                license.appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.txt")
-
-                Node developers = root.appendNode("developers")
-                Node developer = developers.appendNode("developer")
-                developer.appendNode("id", "leftshiftone")
-                developer.appendNode("name", "Leftshift One")
-                developer.appendNode("email", "contact@leftshift.one")
-                developer.appendNode("organization", "Leftshift One Software GmbH")
-                developer.appendNode("organizationUrl", "https://www.leftshift.one")
-
-                Node scm = root.appendNode("scm")
-                scm.appendNode("connection", "scm:git:git://github.com/leftshiftone/intent-markup.git")
-                scm.appendNode("developerConnection", "scm:git:ssh://github.com:leftshiftone/intent-markup.git")
-                scm.appendNode("url", "https://github.com/leftshiftone/intent-markup")
-            }
-        }
-    }
-    repositories {
-        maven {
-            name = "sonatype"
-            url = version.toString().endsWith("SNAPSHOT") ? "https://s01.oss.sonatype.org/content/repositories/snapshots" : "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username System.getenv("OSSRH_LOGIN_NAME")
-                password System.getenv("OSSRH_LOGIN_PASSWORD")
-            }
-        }
-    }
-}
-
 ext."signing.keyId" = System.getenv("OSSRH_SIGN_KEY_ID")
 ext."signing.password" = System.getenv("OSSRH_SIGN_KEY_PASSWORD")
 ext."signing.secretKeyRingFile" = System.getenv("OSSRH_SIGN_KEY_PATH")
