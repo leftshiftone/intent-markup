@@ -24,13 +24,17 @@ class IntentMarkupParser:
         try:
             parsed_xml = xml.fromstring("<markup>"+raw_xml+"</markup>")
             if parsed_xml.find(".//intent") is None:
-                return IntentMarkup(True, raw_xml, [])
+                return IntentMarkup(True, raw_xml, [], False)
             else:
                 intent = parsed_xml.find(".//intent")
                 autocomplete = intent.attrib["autocomplete"] == "true" if "autocomplete" in intent.attrib else True
+                if "keyword-only" in intent.attrib and intent.attrib["keyword-only"] == "true":
+                    keyword = True
+                else:
+                    keyword = False
                 value = element_to_string(intent)
                 must_words = list(map(parse_must_words,intent.findall("must")))
-                return IntentMarkup(autocomplete, value, must_words)
+                return IntentMarkup(autocomplete, value, must_words, keyword)
         except xml.ParseError:
             raise ValueError("A parse error was thrown when parsing " + raw_xml)
 

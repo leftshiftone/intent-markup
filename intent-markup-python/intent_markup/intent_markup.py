@@ -6,6 +6,7 @@ class IntentMarkup:
     autocomplete: bool
     text: str
     musts: ['MustWord']
+    keyword: bool
 
 
 @dataclass

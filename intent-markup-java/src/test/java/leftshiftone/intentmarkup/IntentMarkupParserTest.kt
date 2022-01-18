@@ -58,6 +58,25 @@ class IntentMarkupParserTest {
         endBarrier.await(60, TimeUnit.SECONDS)
     }
 
+    @Test
+    fun `Intent markup with keyword-only true`() {
+        val result = IntentMarkupParser().parse(IntentMarkupParserTest::class.java.getResourceAsStream("/intent_markup_with_keyword_true.xml"))
+        Assertions.assertTrue(result.autocomplete)
+        Assertions.assertEquals("vpn", result.text)
+        Assertions.assertTrue(result.musts.isEmpty())
+        Assertions.assertTrue(result.keyword)
+    }
+
+    @Test
+    fun `Intent markup with keyword-only false`() {
+        val result = IntentMarkupParser().parse(IntentMarkupParserTest::class.java.getResourceAsStream("/intent_markup_with_keyword_false.xml"))
+        Assertions.assertTrue(result.autocomplete)
+        Assertions.assertEquals("vpn", result.text)
+        Assertions.assertTrue(result.musts.isEmpty())
+        Assertions.assertFalse(result.keyword)
+    }
+
+
     private fun intent_markup_with_autocomplete_explicit_and_fuzzy(parser: IntentMarkupParser, expectSuccess: Boolean = true) {
         try {
             val result = parser.parse(this.javaClass.getResourceAsStream("/intent_markup_with_autocomplete_explicit_and_fuzzy.xml"))

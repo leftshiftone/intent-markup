@@ -38,3 +38,19 @@ class IntentMarkupParserTest(TestCase):
             print(intent)
             self.assertTrue(intent.autocomplete)
             self.assertEqual("Das ist ein Beispiel.", intent.text)
+
+    def test_intent_markup_with_keyword_false(self):
+        with open(f"{self.root_dir}/../build/testResources/intent_markup_with_keyword_false.xml", 'r') as f:
+            intent = IntentMarkupParser.parse(f.read())
+            self.assertTrue(intent.autocomplete)
+            self.assertFalse(intent.keyword)
+            self.assertEqual("vpn", intent.text)
+            self.assertTrue(len(intent.musts) == 0)
+
+    def test_intent_markup_with_keyword_true(self):
+        with open(f"{self.root_dir}/../build/testResources/intent_markup_with_keyword_true.xml", 'r') as f:
+            intent = IntentMarkupParser.parse(f.read())
+            self.assertTrue(intent.autocomplete)
+            self.assertTrue(intent.keyword)
+            self.assertEqual("vpn", intent.text)
+            self.assertTrue(len(intent.musts) == 0)
