@@ -40,13 +40,18 @@ class IntentMarkupParser {
             val intentNode = root.findAll("intent")
                 .firstOrNull()
             if (intentNode == null) {
-                return IntentMarkup(true, root.textContent, emptyList())
+                return IntentMarkup(true, root.textContent, emptyList(),false)
             }
 
             val musts = intentNode.findAll("must").map {
                 MustWord(it.textContent, it.isTrue("fuzzy"))
             }
-            return IntentMarkup(intentNode.isTrue("autocomplete", true), intentNode.textContent, musts)
+            return IntentMarkup(
+                autocomplete= intentNode.isTrue("autocomplete", true),
+                text =intentNode.textContent,
+                musts = musts,
+                keyword = intentNode.isTrue("keyword-only", true)
+            )
         } catch (e: Exception) {
             throw RuntimeException(e)
         }

@@ -9,9 +9,12 @@ export class IntentMarkupParser {
         const root: any = document.firstChild
         const intentNode = root.firstElementChild
         if( intentNode== null)
-            return new IntentMarkup(true, root.textContent, [])
+            return new IntentMarkup(true, root.textContent, [], false)
         const autocomplete = intentNode.hasAttribute("autocomplete") ?
             intentNode.getAttribute("autocomplete") == "true" : true
+
+        const keyword = intentNode.hasAttribute("keyword-only") ?
+            intentNode.getAttribute("keyword-only") == "true" : false
 
         const result = [];
         const mustWords =intentNode.getElementsByTagName("must");
@@ -22,6 +25,6 @@ export class IntentMarkupParser {
             result.push(new MustWord(mustWord.textContent, fuzzy));
         }
 
-        return new IntentMarkup(autocomplete, intentNode.textContent, result);
+        return new IntentMarkup(autocomplete, intentNode.textContent, result, keyword);
     }
 }

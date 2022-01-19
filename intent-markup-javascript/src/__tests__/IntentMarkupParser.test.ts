@@ -38,7 +38,24 @@ describe("IntentMarkupParser Test", () => {
         expect(intent.autocomplete).toBeTruthy()
         expect(intent.text).toBe("Das ist ein Beispiel.")
     });
-
+    test('intent_markup_with_keyword_false.xml', () => {
+        let filePath = path.join(__dirname+'/../../build/testResources', 'intent_markup_with_keyword_false.xml');
+        let xml = fs.readFileSync(filePath).toString()
+        const intent = IntentMarkupParser.parse(xml)
+        expect(intent.autocomplete).toBeTruthy()
+        expect(intent.text).toBe("vpn")
+        expect(intent.musts.length == 0).toBeTruthy()
+        expect(intent.keyword).toBeFalsy()
+    });
+    test('intent_markup_with_keyword_true.xml', () => {
+        let filePath = path.join(__dirname+'/../../build/testResources', 'intent_markup_with_keyword_true.xml');
+        let xml = fs.readFileSync(filePath).toString()
+        const intent = IntentMarkupParser.parse(xml)
+        expect(intent.autocomplete).toBeTruthy()
+        expect(intent.text).toBe("vpn")
+        expect(intent.musts.length == 0).toBeTruthy()
+        expect(intent.keyword).toBeTruthy()
+    });
 
 
 })

@@ -16,6 +16,17 @@ This library can be used with Java, Python and Javascript. Intent Utterances can
 Das ist ein Beispiel.
 ```
 
+Intent Utterances can be marked as keyword by explicitly adding the attribute keyword-only
+```
+<!-- enable keyword functionality, default is false -->
+<intent keyword-only="true">vpn</intent>
+```
+
+
+## Keyword functionality
+
+By enabling the keyword, some intent detection skills might identify an intent if the input text contains any of the configured keywords 
+
 ## Development
 
 ### Release
